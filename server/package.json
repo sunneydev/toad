@@ -1,6 +1,6 @@
 {
   "name": "@toad/server",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "exports": "./dist/index.mjs",
   "keywords": [
     "toad",
