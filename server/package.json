@@ -1,6 +1,6 @@
 {
   "name": "@sunney/toad-server",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "exports": "./dist/index.mjs",
   "keywords": [
     "toad",
