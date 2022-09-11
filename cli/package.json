@@ -1,7 +1,6 @@
 {
   "name": "@sunney/toad-cli",
   "version": "0.1.0",
-  "private": true,
   "exports": "./dist/index.mjs",
   "bin": {
     "toad": "dist/index.mjs"
