@@ -1,23 +1,11 @@
 {
-  "name": "@sunney/toad",
-  "version": "0.0.0",
-  "workspaces": [
-    "cli",
-    "server"
-  ],
+  "name": "toad",
+  "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "build": "turbo run build"
   },
   "devDependencies": {
-    "prettier": "latest",
-    "turbo": "latest"
+    "turbo": "^1.9.3"
   },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "dependencies": {},
-  "packageManager": "pnpm@7.9.5"
+  "packageManager": "pnpm@7.15.0"
 }
