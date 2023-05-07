@@ -1,7 +1,7 @@
 // import express from "express";
 // import { Octokit } from "@octokit/core";
 // import { AuthProps } from "shared/types";
-import { config } from "./config.js";
+import { config } from "./config";
 
 console.log(config);
 
