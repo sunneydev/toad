@@ -6,8 +6,8 @@ const app = express();
 
 app.use(express.json());
 
-app.post("/callback", (req, res) => {
-  const { body } = req;
+app.post("/webhook", (req, res) => {
+  const { body } = req.body;
   console.log(body);
   res.send("ok");
 });
@@ -67,7 +67,9 @@ app.post("/watch", async (req, res) => {
   const [owner, repo] = repositoryPath.split("/");
 
   if (!owner || !repo) {
-    res.status(400).json({ error: "Invalid repository" });
+    res
+      .status(400)
+      .json({ error: "Invalid repository, use format of `owner/repo`" });
     return;
   }
 
@@ -79,25 +81,32 @@ app.post("/watch", async (req, res) => {
   });
 
   if (!repository) {
-    res.status(400).json({ error: "Invalid repository" });
+    res.status(400).json({ error: "Repository not found" });
     return;
   }
 
-  await octokit.request("POST /repos/{owner}/{repo}/hooks", {
-    owner,
-    repo,
-    events: ["push"],
-    config: {
-      url: `https://${req.hostname}/webhook`,
-      content_type: "json",
-      secret,
-    },
-  });
+  try {
+    await octokit.request("POST /repos/{owner}/{repo}/hooks", {
+      owner,
+      repo,
+      events: ["push"],
+      config: {
+        url: `https://${req.hostname}/webhook`,
+        content_type: "json",
+        secret,
+      },
+    });
 
-  res.json({
-    success: true,
-    message: `Watching ${repositoryPath}`,
-  });
+    res.json({
+      success: true,
+      message: `Watching ${repositoryPath}`,
+    });
+  } catch (e: any) {
+    res.status(400).json({
+      error:
+        "Error occured while creating the webhook, most likely the webhook already exists.",
+    });
+  }
 });
 
 app.listen(config.port, () => {
