@@ -4,7 +4,7 @@ export default defineConfig((flags) => {
   const buildOptions: Options = {
     minify: true,
     clean: true,
-    format: ["cjs", "esm"],
+    format: ["esm"],
     dts: true,
   };
 
@@ -15,8 +15,6 @@ export default defineConfig((flags) => {
   };
 
   const options = flags.watch ? devOptions : buildOptions;
-
-  console.log(options.format);
 
   return {
     entry: ["src/index.ts"],
