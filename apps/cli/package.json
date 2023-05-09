@@ -1,6 +1,6 @@
 {
-  "name": "@toad/cli",
-  "version": "0.0.1",
+  "name": "@sunney/toad-cli",
+  "version": "0.2.0",
   "description": "A CLI tool for Toad",
   "publishConfig": {
     "access": "public"
