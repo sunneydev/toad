@@ -1,5 +1,5 @@
 {
-  "name": "@toad/server",
+  "name": "@sunney/toad-server",
   "version": "0.0.1",
   "description": "Toad server",
   "publishConfig": {
