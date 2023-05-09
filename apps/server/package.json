@@ -1,7 +1,7 @@
 {
   "name": "@toad/server",
   "version": "0.0.1",
-  "description": "Project description",
+  "description": "Toad server",
   "publishConfig": {
     "access": "public"
   },
