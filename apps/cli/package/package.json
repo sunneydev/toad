@@ -1,6 +1,6 @@
 {
   "name": "@sunney/toad-cli",
-  "version": "0.2.1",
+  "version": "0.2.0",
   "description": "A CLI tool for Toad",
   "publishConfig": {
     "access": "public"
@@ -8,26 +8,17 @@
   "bin": {
     "toad": "./lib/index.js"
   },
-  "files": [
-    "lib"
-  ],
   "type": "module",
   "exports": {
     "import": "./lib/index.js"
   },
   "types": "./lib/index.d.ts",
-  "scripts": {
-    "test": "toad auth -d localhost:3000 --no-https",
-    "dev": "tsup --watch",
-    "build": "tsup",
-    "prepublishOnly": "pnpm run build"
-  },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.16.3",
-    "tsconfig": "workspace:*",
     "tsup": "6.7.0",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "tsconfig": "0.0.0"
   },
   "dependencies": {
     "@octokit/auth-oauth-device": "^4.0.4",
@@ -36,6 +27,11 @@
     "commander": "^10.0.1",
     "conf": "^11.0.1",
     "open": "^9.1.0",
-    "shared": "workspace:*"
+    "shared": "0.0.0"
+  },
+  "scripts": {
+    "test": "toad auth -d localhost:3000 --no-https",
+    "dev": "tsup --watch",
+    "build": "tsup"
   }
 }
