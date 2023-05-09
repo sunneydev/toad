@@ -1,21 +1,38 @@
-import { FileSystemCache } from "file-system-cache";
-import { AuthProps } from "shared/types";
+import Conf from "conf";
+import { secureRandomToken } from "./utils.js";
+import { z } from "zod";
 
-const cache = new FileSystemCache({
-  basePath: "~/.toad/config",
-  ns: "toad-server",
+const conf = new Conf({
+  projectName: "toad-server",
+  projectSuffix: "",
+  defaults: {
+    github: {
+      clientId: "",
+      clientSecret: "",
+    },
+    token: secureRandomToken(),
+  },
 });
 
-export const config = cache.getSync("config") as AuthProps | undefined;
+const github = conf.get("github");
 
-export const getAuth = () => cache.getSync("auth");
+const githubSchema = z.object({
+  clientId: z.string().nonempty(),
+  clientSecret: z.string().nonempty(),
+});
 
-export const setAuth = (auth: any) => cache.setSync("auth", auth);
-
-export const getSecret = () => cache.getSync("secret");
-
-export const setSecret = (secret: any) => cache.setSync("secret", secret);
-
-export const getDomain = () => cache.getSync("domain");
-
-export const setDomain = (domain: any) => cache.setSync("domain", domain);
+try {
+  githubSchema.parse(github);
+} catch (error) {
+  if (error instanceof z.ZodError) {
+    console.error(
+      `Invalid GitHub configuration, update values in ${conf.path}`
+    );
+  } else {
+    console.error(error);
+  }
+  process.exit(1);
+}
+export const config = {
+  github,
+};

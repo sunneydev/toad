@@ -1,48 +1,60 @@
-// import express from "express";
-// import { Octokit } from "@octokit/core";
-// import { AuthProps } from "shared/types";
-import { config } from "./config";
+import express from "express";
+import { config } from "./config.js";
+import { createOAuthDeviceAuth } from "@octokit/auth-oauth-device";
 
-console.log(config);
+const app = express();
 
-// const app = express();
-// const octokit = new Octokit();
+async function main() {
+  const { clientId } = config.github;
 
-// app.use(express.json());
+  const auth = createOAuthDeviceAuth({
+    clientId,
+    scopes: ["repo"],
+    onVerification: async (verification) => {
+      console.log(
+        `Open ${verification.verification_uri} in your browser and enter code ${verification.user_code}`
+      );
+    },
+  });
 
-// app.post("/auth", (req, res) => {
-//   const auth: Partial<AuthProps> = req.body;
+  const tokenAuthentication = await auth({ type: "oauth" });
 
-//   if (!auth.token || !auth.domain || !auth.secret) {
-//     res.status(400).send("Missing auth props");
-//     return;
-//   }
+  console.log(tokenAuthentication);
+}
 
-//   if (!auth) {
-//     res.status(400).send("Missing auth");
-//     return;
-//   }
-// });
+main()
+  .then(() => console.log("Done ✅"))
+  .catch(console.error);
 
-// app.post("/watch", (req, res) => {
-//   const { repository } = req.body;
+app.use(express.json());
 
-//   if (!repository) {
-//     res.status(400).send("Missing repository");
-//     return;
-//   }
+app.post("/auth", async (req, res) => {
+  return res.json({ success: true });
+});
 
-//   req.octokit.request("POST /repos/{owner}/{repo}/hooks", {
-//     owner: repository.owner.login,
-//     repo: repository.name,
-//     active: true,
-//     events: ["push"],
-//     config: {
-//       url: ``,
-//       content_type: "json",
-//       insecure_ssl: "0",
-//     },
-//   });
+app.post("/watch", (req, res) => {
+  const { repository } = req.body;
 
-//   res.send("Hello World!");
-// });
+  if (!repository) {
+    res.status(400).send("Missing repository");
+    return;
+  }
+
+  // req.octokit.request("POST /repos/{owner}/{repo}/hooks", {
+  //   owner: repository.owner.login,
+  //   repo: repository.name,
+  //   active: true,
+  //   events: ["push"],
+  //   config: {
+  //     url: ``,
+  //     content_type: "json",
+  //     insecure_ssl: "0",
+  //   },
+  // });
+
+  res.send("Hello World!");
+});
+
+app.listen(3000, () => {
+  console.log("Server listening on port 3000");
+});

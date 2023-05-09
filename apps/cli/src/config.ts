@@ -1,11 +1,7 @@
-import dotenv from "dotenv";
+import Conf from "conf";
 
-dotenv.config();
-
-if (!process.env.GITHUB_TOKEN) {
-  throw new Error("GITHUB_TOKEN is not set");
-}
-
-export const cfg = {
-  GITHUB_TOKEN: process.env.GITHUB_TOKEN,
-};
+export const config = new Conf({
+  projectName: "toad-cli",
+  projectSuffix: "",
+  defaults: {},
+});

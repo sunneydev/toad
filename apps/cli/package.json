@@ -6,16 +6,13 @@
     "access": "public"
   },
   "bin": {
-    "toad": "./dist/index.mjs"
+    "toad": "./lib/index.js"
   },
   "type": "module",
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
   "exports": {
-    "require": "./dist/index.js",
-    "import": "./dist/index.mjs"
+    "import": "./lib/index.js"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./lib/index.d.ts",
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
@@ -24,15 +21,14 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.16.3",
-    "tsup": "6.7.0",
     "tsconfig": "workspace:*",
+    "tsup": "6.7.0",
     "typescript": "5.0.4"
   },
   "dependencies": {
-    "shared": "workspace:*",
     "@sunney/requests": "^0.2.3",
     "commander": "^10.0.1",
-    "dotenv": "^16.0.3",
-    "file-system-cache": "^2.1.1"
+    "conf": "^11.0.1",
+    "shared": "workspace:*"
   }
 }
