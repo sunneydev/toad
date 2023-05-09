@@ -8,5 +8,5 @@ export default defineConfig((options) => ({
   format: options.watch ? ["esm"] : ["cjs", "esm"],
   dts: !options.watch,
   outDir: "lib",
-  onSuccess: options.watch ? "node lib/index.mjs" : undefined,
+  onSuccess: options.watch ? "node lib/index.js" : undefined,
 }));

@@ -26,9 +26,12 @@
     "typescript": "5.0.4"
   },
   "dependencies": {
+    "@octokit/auth-oauth-device": "^4.0.4",
     "@sunney/requests": "^0.2.3",
+    "chalk": "^5.2.0",
     "commander": "^10.0.1",
     "conf": "^11.0.1",
+    "open": "^9.1.0",
     "shared": "workspace:*"
   }
 }
