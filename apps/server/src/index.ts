@@ -1,60 +1,105 @@
 import express from "express";
 import { config } from "./config.js";
-import { createOAuthDeviceAuth } from "@octokit/auth-oauth-device";
+import { Octokit } from "@octokit/core";
 
 const app = express();
 
-async function main() {
-  const { clientId } = config.github;
-
-  const auth = createOAuthDeviceAuth({
-    clientId,
-    scopes: ["repo"],
-    onVerification: async (verification) => {
-      console.log(
-        `Open ${verification.verification_uri} in your browser and enter code ${verification.user_code}`
-      );
-    },
-  });
-
-  const tokenAuthentication = await auth({ type: "oauth" });
-
-  console.log(tokenAuthentication);
-}
-
-main()
-  .then(() => console.log("Done ✅"))
-  .catch(console.error);
-
 app.use(express.json());
 
-app.post("/auth", async (req, res) => {
-  return res.json({ success: true });
+app.post("/callback", (req, res) => {
+  const { body } = req;
+  console.log(body);
+  res.send("ok");
 });
 
-app.post("/watch", (req, res) => {
-  const { repository } = req.body;
+app.post("/auth", async (req, res) => {
+  const { token, scopes } = req.body;
 
-  if (!repository) {
-    res.status(400).send("Missing repository");
+  if (!token) {
+    res.status(400).json({ message: "Missing token" });
     return;
   }
 
-  // req.octokit.request("POST /repos/{owner}/{repo}/hooks", {
-  //   owner: repository.owner.login,
-  //   repo: repository.name,
-  //   active: true,
-  //   events: ["push"],
-  //   config: {
-  //     url: ``,
-  //     content_type: "json",
-  //     insecure_ssl: "0",
-  //   },
-  // });
+  if (!scopes || !Array.isArray(scopes) || !scopes.includes("repo")) {
+    res.status(400).json({ message: "Missing scopes" });
+    return;
+  }
 
-  res.send("Hello World!");
+  const octokit = new Octokit({ auth: token });
+
+  const { data } = await octokit.request("GET /user");
+
+  if (
+    !config.allowedUsernames.includes(data.login) &&
+    !config.allowedUsernames.includes("*") // allow all users if "*" is in the list
+  ) {
+    res.status(403).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const userToken = config.addUser(token);
+
+  res.json({ success: true, token: userToken });
 });
 
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
+app.post("/watch", async (req, res) => {
+  const secret = req.headers["x-secret"];
+
+  if (typeof secret !== "string") {
+    res.status(400).json({ error: "Missing secret" });
+    return;
+  }
+
+  const token = config.getToken(secret);
+
+  if (!token) {
+    res.status(403).json({ error: "Invalid secret" });
+    return;
+  }
+
+  const { repository: repositoryPath } = req.body;
+
+  if (typeof repositoryPath !== "string") {
+    res.status(400).json({ error: "Missing repository" });
+    return;
+  }
+
+  const [owner, repo] = repositoryPath.split("/");
+
+  if (!owner || !repo) {
+    res.status(400).json({ error: "Invalid repository" });
+    return;
+  }
+
+  const octokit = new Octokit({ auth: token });
+
+  const repository = await octokit.request("GET /repos/{owner}/{repo}", {
+    owner,
+    repo,
+  });
+
+  if (!repository) {
+    res.status(400).json({ error: "Invalid repository" });
+    return;
+  }
+
+  await octokit.request("POST /repos/{owner}/{repo}/hooks", {
+    owner,
+    repo,
+    events: ["push"],
+    config: {
+      url: `https://${req.hostname}/webhook`,
+      content_type: "json",
+      secret,
+    },
+  });
+
+  res.json({
+    success: true,
+    message: `Watching ${repositoryPath}`,
+  });
+});
+
+app.listen(config.port, () => {
+  console.log(`🌎 Toad server running on port ${config.port}`);
 });

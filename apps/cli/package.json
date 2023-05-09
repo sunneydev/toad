@@ -14,6 +14,7 @@
   },
   "types": "./lib/index.d.ts",
   "scripts": {
+    "test": "toad auth -d localhost:3000 --no-https",
     "dev": "tsup --watch",
     "build": "tsup",
     "prepublishOnly": "pnpm run build"
