@@ -88,6 +88,9 @@ app.post("/webhook", async (req, res) => {
     res.status(500).json({ error: "Failed to pull repository" });
     return;
   }
+
+  await pm.removeProcess(`${username}/${repo}`);
+
   await pm.addProcess(`${username}/${repo}`, "npm", {
     cwd: repositoryPath,
     args: ["run", "start"],
