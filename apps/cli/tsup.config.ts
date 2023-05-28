@@ -1,12 +1,22 @@
-import { defineConfig } from "tsup";
+import { defineConfig, type Options } from "tsup";
 
-export default defineConfig((options) => ({
-  entry: ["src/index.ts"],
-  sourcemap: !options.watch,
-  minify: !options.watch,
-  clean: !options.watch,
-  format: options.watch ? ["esm"] : ["cjs", "esm"],
-  dts: !options.watch,
-  outDir: "lib",
-  onSuccess: options.watch ? "node lib/index.mjs" : undefined,
-}));
+export default defineConfig((flags) => {
+  const buildOptions: Options = {
+    minify: true,
+    clean: true,
+    format: ["esm"],
+  };
+
+  const devOptions: Options = {
+    sourcemap: true,
+    format: ["esm"],
+  };
+
+  const options = flags.watch ? devOptions : buildOptions;
+
+  return {
+    entry: ["src/index.ts"],
+    outDir: "dist",
+    ...options,
+  };
+});

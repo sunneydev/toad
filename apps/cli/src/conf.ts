@@ -1,7 +1,7 @@
 import Conf from "conf";
 
-export const config = new Conf({
+export const conf = new Conf({
   projectName: "toad-cli",
   projectSuffix: "",
-  defaults: {},
+  defaults: { token: "", domain: "" },
 });
