@@ -1,7 +1,7 @@
 {
   "name": "@sunney/toad-cli",
   "description": "Toad CLI",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "bin": {
     "toad": "./dist/index.js"
   },
@@ -20,7 +20,6 @@
     "@types/node": "^20.2.5",
     "@types/prompts": "^2.4.4",
     "@types/tar": "^6.1.5",
-    "@types/tar-stream": "^2.2.2",
     "tsup": "6.7.0",
     "typescript": "5.0.4"
   },
@@ -30,14 +29,9 @@
     "archiver": "^5.3.1",
     "commander": "^10.0.1",
     "conf": "^11.0.1",
-    "fetch-blob": "^4.0.0",
-    "form-data": "^4.0.0",
     "hono": "^3.2.2",
-    "ignore": "^5.2.4",
     "prompts": "^2.4.2",
     "shared": "workspace:*",
-    "stream-to-blob": "^2.0.1",
-    "tar": "^6.1.15",
-    "tar-stream": "^3.0.0"
+    "tar": "^6.1.15"
   }
 }
