@@ -1,4 +1,4 @@
-import { SetupRequest } from "shared/types.js";
+import { SetupRequest } from "./types.js";
 import { conf } from "./conf.js";
 import { requests } from "@sunney/requests";
 

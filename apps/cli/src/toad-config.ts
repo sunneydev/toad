@@ -1,4 +1,4 @@
-import { Commands, IToadConfig } from "shared/types.js";
+import { Commands, IToadConfig } from "./types.js";
 import fs from "node:fs";
 
 export class ToadConfig implements IToadConfig {

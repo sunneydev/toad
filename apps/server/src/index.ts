@@ -9,7 +9,7 @@ import os from "node:os";
 import tar from "tar";
 import path from "node:path";
 import { ProcessManager } from "./pm.js";
-import { IToadConfig } from "shared/types.js";
+import { IToadConfig } from "./types.js";
 import * as cp from "node:child_process";
 
 const pm = new ProcessManager();

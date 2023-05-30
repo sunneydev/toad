@@ -1,4 +1,4 @@
-import { IToadConfig } from "shared/types.js";
+import { IToadConfig } from "./types.js";
 import crypto from "node:crypto";
 import os from "node:os";
 import * as fs from "node:fs/promises";

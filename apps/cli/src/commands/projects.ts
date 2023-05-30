@@ -1,4 +1,4 @@
-import { ToadProject } from "shared/types.js";
+import { ToadProject } from "../types.js";
 import { api } from "../api.js";
 
 export async function projects() {

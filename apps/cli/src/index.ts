@@ -1,6 +1,13 @@
 import { program } from "commander";
-import { setup, init, up, projects, stop, start } from "./commands/index.js";
-import { status } from "./commands/status.js";
+import {
+  setup,
+  init,
+  up,
+  projects,
+  stop,
+  start,
+  status,
+} from "./commands/index.js";
 
 program.version("0.0.1").description("Toad CLI");
 

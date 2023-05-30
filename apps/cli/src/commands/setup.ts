@@ -1,4 +1,4 @@
-import type { SetupRequest } from "shared/types.js";
+import type { SetupRequest } from "../types.js";
 import { api } from "../api.js";
 import { conf } from "../conf.js";
 import prompts from "prompts";

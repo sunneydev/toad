@@ -2,7 +2,7 @@ import path from "path";
 import { ToadConfig } from "../toad-config.js";
 import prompts from "prompts";
 import { api } from "../api.js";
-import { ToadProject } from "shared/types.js";
+import { ToadProject } from "../types.js";
 
 export async function init(name?: string, options?: { appDomain?: string }) {
   const projectDirectoryPath = process.cwd();

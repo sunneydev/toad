@@ -1,7 +1,7 @@
 {
   "name": "@sunney/toad-server",
   "description": "Toad Server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -29,7 +29,6 @@
     "fs-extra": "^11.1.1",
     "hono": "^3.2.2",
     "ioredis": "^5.3.2",
-    "shared": "workspace:*",
     "tar": "^6.1.15"
   }
 }

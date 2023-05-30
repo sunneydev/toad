@@ -1,7 +1,7 @@
 import { Redis } from "ioredis";
 import findProcess from "find-process";
 import { spawn, type SpawnOptions } from "child_process";
-import { Process } from "shared/types.js";
+import { Process } from "./types.js";
 import { conf } from "./conf.js";
 
 export class ProcessManager {
