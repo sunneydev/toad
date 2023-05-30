@@ -1,7 +1,6 @@
 import { api } from "../api.js";
 import { ToadConfig } from "../toad-config.js";
 import { promises as fs } from "node:fs";
-import FormData from "form-data";
 import tar from "tar";
 import os from "node:os";
 
@@ -42,7 +41,7 @@ export async function up() {
 
   const file = await fs.readFile(tempPath);
 
-  await api().post("/up", {
+  await api().post(`/up/${config.name}`, {
     headers: { "Content-Type": "application/octet-stream" },
     body: file,
   });

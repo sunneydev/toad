@@ -47,11 +47,6 @@ export async function init(name?: string, options?: { appDomain?: string }) {
     }
   }
 
-  console.log({
-    name: projectName,
-    projectDirectoryPath,
-  });
-
   const config = new ToadConfig(projectDirectoryPath, name);
 
   if (config.exists && projectName == config.name) {

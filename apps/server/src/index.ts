@@ -2,11 +2,17 @@ import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { bearerAuth } from "hono/bearer-auth";
 import { conf } from "./conf.js";
-import { listProjects } from "./utils.js";
+import { listProjects, toadProjectsDir } from "./utils.js";
 import fs from "node:fs/promises";
+import fse from "fs-extra";
 import os from "node:os";
 import tar from "tar";
+import path from "node:path";
+import { ProcessManager } from "./pm.js";
+import { IToadConfig } from "shared/types.js";
+import * as cp from "node:child_process";
 
+const pm = new ProcessManager();
 const app = new Hono().basePath("/api");
 
 app.use("/*", bearerAuth({ token: conf.get("token") }));
@@ -16,12 +22,19 @@ app.get("/auth", async (c) => {
 });
 
 app.get("/projects", async (c) => {
-  const projects = listProjects();
+  const projects = await listProjects(pm);
 
   return c.json(projects);
 });
 
-app.post("/up", async (c) => {
+app.get("/processes", async (c) => {
+  const processes = await pm.getProcesses();
+
+  return c.json(processes);
+});
+
+app.post("/up/:name", async (c) => {
+  const projectName = c.req.param("name");
   const projectBundle = await c.req.arrayBuffer();
 
   const tempDir = await fs.mkdtemp(`${os.tmpdir()}/.toad`);
@@ -29,12 +42,49 @@ app.post("/up", async (c) => {
 
   await fs.writeFile(tempPath, Buffer.from(projectBundle));
 
-  await tar.x({
-    file: tempPath,
-    cwd: tempDir,
+  const projectDir = path.join(toadProjectsDir, projectName);
+
+  if (fse.existsSync(projectDir)) {
+    await fse.emptyDir(projectDir);
+  } else {
+    await fse.mkdir(projectDir, { recursive: true });
+  }
+
+  await tar.x({ file: tempPath, cwd: projectDir });
+
+  await fs.rm(tempDir, { recursive: true, force: true });
+
+  const config = (await fs
+    .readFile(path.join(projectDir, "toad.config.json"), "utf-8")
+    .then(JSON.parse)
+    .catch(() => null)) as IToadConfig | null;
+
+  if (!config) {
+    return c.json({ ok: false, message: "Invalid project" });
+  }
+
+  const installCmd = config.commands?.install ?? "pnpm install";
+  cp.execSync(installCmd, { cwd: projectDir, env: config.env });
+  console.log("Installed");
+
+  const buildCmd = config.commands?.build ?? "pnpm build";
+  cp.execSync(buildCmd, { cwd: projectDir, env: config.env });
+  console.log("Built");
+
+  const [startCmd, ...startArgs] = (
+    config.commands?.start ?? "pnpm start"
+  ).split(" ");
+
+  console.log("Starting", startCmd, startArgs);
+
+  const process = await pm.start(projectName, startCmd, startArgs, {
+    cwd: projectDir,
+    env: config.env,
   });
 
-  return c.json({ ok: true, message: "Uploaded" });
+  console.log("Started!");
+
+  return c.json({ ok: true, message: "Uploaded", process });
 });
 
 serve(app, (info) =>
