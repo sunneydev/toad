@@ -11,3 +11,11 @@ export const conf = new Conf({
     redis_password: "",
   },
 });
+
+if (!conf.get("redis_host")) {
+  console.log(
+    "No redis host configured, please check your configuration file",
+    conf.path
+  );
+  process.exit(1);
+}

@@ -1,7 +1,7 @@
+import { conf } from "./conf.js";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { bearerAuth } from "hono/bearer-auth";
-import { conf } from "./conf.js";
 import { listProjects, toadProjectsDir } from "./utils.js";
 import fs from "node:fs/promises";
 import fse from "fs-extra";
