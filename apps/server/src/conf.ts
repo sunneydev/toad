@@ -9,6 +9,7 @@ export const conf = new Conf({
     redis_host: "",
     redis_port: 6379,
     redis_password: "",
+    server_port: 8011,
   },
 });
 

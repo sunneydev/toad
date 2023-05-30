@@ -1,7 +1,7 @@
 {
   "name": "@sunney/toad-server",
   "description": "Toad Server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "bin": {
     "toad-server": "./dist/index.js"

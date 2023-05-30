@@ -138,7 +138,7 @@ app.post("/up/:name", async (c) => {
   return c.json({ ok: true, message: "Uploaded", process });
 });
 
-serve(app, (info) =>
+serve({ ...app, port: conf.get("port") }, (info) =>
   console.info(`Server listening on ${info.address}:${info.port}`)
 );
 
