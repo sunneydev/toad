@@ -31,9 +31,6 @@ importers:
       prompts:
         specifier: ^2.4.2
         version: 2.4.2
-      shared:
-        specifier: workspace:*
-        version: link:../../packages/shared
       tar:
         specifier: ^6.1.15
         version: 6.1.15
@@ -96,8 +93,6 @@ importers:
       vitest:
         specifier: ^0.31.1
         version: 0.31.1
-
-  packages/shared: {}
 
 packages:
 
