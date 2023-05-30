@@ -10,13 +10,19 @@ export class ToadConfig implements IToadConfig {
 
   exists = false;
 
-  constructor(baseDirectory: string, name?: string) {
-    this.baseDirectory = baseDirectory;
+  constructor(baseDirectory?: string) {
+    this.baseDirectory = baseDirectory ?? process.cwd();
     this.name = undefined;
     this.commands = {};
     this.appDomain = undefined;
     this.env = undefined;
     this.load();
+  }
+
+  public setName(name: string) {
+    this.name = name;
+
+    return this;
   }
 
   async save(config: IToadConfig) {

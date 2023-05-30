@@ -1,7 +1,7 @@
 import { api } from "../api.js";
 import { ToadConfig } from "../toad-config.js";
 
-export async function start(projectName?: string) {
+export async function status(projectName?: string) {
   const config = new ToadConfig();
 
   if (!projectName) {
@@ -16,9 +16,7 @@ export async function start(projectName?: string) {
     projectName = config.name;
   }
 
-  console.log("Starting project", projectName);
-
-  const response = await api().post(`/start/${projectName}`);
+  const response = await api().get(`/status/${projectName}`);
 
   console.log(response.data);
 }

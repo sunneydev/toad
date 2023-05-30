@@ -1,5 +1,6 @@
 import { program } from "commander";
 import { setup, init, up, projects, stop, start } from "./commands/index.js";
+import { status } from "./commands/status.js";
 
 program.version("0.0.1").description("Toad CLI");
 
@@ -20,8 +21,13 @@ program.command("up").description("Upload your project").action(up);
 
 program.command("projects").description("Show all projects").action(projects);
 
-program.command("stop <project>").description("Stop a project").action(stop);
+program
+  .command("status [project]")
+  .description("Show project status")
+  .action(status);
 
-program.command("start <project>").description("Start a project").action(start);
+program.command("stop [project]").description("Stop a project").action(stop);
+
+program.command("start [project]").description("Start a project").action(start);
 
 program.parseAsync(process.argv);

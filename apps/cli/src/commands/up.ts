@@ -16,7 +16,7 @@ const ignored = [
 export async function up() {
   const projectDirectoryPath = process.cwd();
 
-  const config = new ToadConfig(projectDirectoryPath);
+  const config = new ToadConfig();
 
   if (!config.exists) {
     throw new Error("Project not initialized, please run `toad init` first");

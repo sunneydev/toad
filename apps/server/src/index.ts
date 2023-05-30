@@ -27,10 +27,61 @@ app.get("/projects", async (c) => {
   return c.json(projects);
 });
 
-app.get("/processes", async (c) => {
-  const processes = await pm.getProcesses();
+app.post("/start/:name", async (c) => {
+  const projectName = c.req.param("name");
 
-  return c.json(processes);
+  const projectDir = path.join(toadProjectsDir, projectName);
+
+  const projectConfig = (await fs
+    .readFile(path.join(projectDir, "toad.config.json"), "utf-8")
+    .then(JSON.parse)
+    .catch((err) => {
+      console.error(err);
+      return null;
+    })) as IToadConfig;
+
+  const process = await pm.get(projectName);
+
+  if (process?.status === "running") {
+    return c.json({ ok: false, message: "Project already running" });
+  }
+
+  const [startCmd, ...startArgs] = projectConfig.commands?.start?.split(
+    " "
+  ) ?? ["pnpm", "start"];
+
+  await pm.start(projectName, startCmd, startArgs, {
+    env: projectConfig.env,
+    cwd: projectDir,
+  });
+
+  return c.json({ ok: true, message: "Started" });
+});
+
+app.post("/stop/:name", async (c) => {
+  const projectName = c.req.param("name");
+
+  const process = await pm.get(projectName);
+
+  if (!process) {
+    return c.json({ ok: false, message: "Project not running" });
+  }
+
+  await pm.stop(projectName);
+
+  return c.json({ ok: true, message: "Stopped" });
+});
+
+app.get("/status/:name", async (c) => {
+  const projectName = c.req.param("name");
+
+  const process = await pm.get(projectName);
+
+  if (!process) {
+    return c.json({ ok: false, message: "Project process does not exist" });
+  }
+
+  return c.json({ ok: true, message: process.status });
 });
 
 app.post("/up/:name", async (c) => {

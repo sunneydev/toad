@@ -1,14 +1,8 @@
 import { Redis } from "ioredis";
 import findProcess from "find-process";
 import { spawn, type SpawnOptions } from "child_process";
+import { Process } from "shared/types.js";
 
-interface Process {
-  id: string;
-  name: string;
-  command: string;
-  status: "running" | "stopped";
-  pid: string;
-}
 export class ProcessManager {
   private redis: Redis;
 
@@ -66,7 +60,6 @@ export class ProcessManager {
   }
 
   private _stopProcess(pid: string) {
-    console.log("Stopping process", pid);
     const pn = parseInt(pid);
     process.kill(pn);
   }
@@ -80,7 +73,6 @@ export class ProcessManager {
     const pid = this._startProcess(command, args, options);
 
     const process: Process = {
-      id: pid,
       name,
       command: `${command} ${args?.join(" ")}`,
       status: "running",
@@ -101,7 +93,14 @@ export class ProcessManager {
 
     const process: Process = JSON.parse(processString);
 
-    this._stopProcess(process.pid);
+    try {
+      this._stopProcess(process.pid);
+    } catch (err) {
+      console.log(
+        `Failed to stop process ${name} with pid ${process.pid}. The process may have already stopped.`
+      );
+    }
+
     process.status = "stopped";
 
     await this.redis.hset("processes", name, JSON.stringify(process));

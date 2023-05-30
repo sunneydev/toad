@@ -47,7 +47,7 @@ export async function init(name?: string, options?: { appDomain?: string }) {
     }
   }
 
-  const config = new ToadConfig(projectDirectoryPath, name);
+  const config = new ToadConfig().setName(projectName);
 
   if (config.exists && projectName == config.name) {
     throw new Error(`Project ${projectName} is already initialized`);

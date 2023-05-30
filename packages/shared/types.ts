@@ -15,6 +15,15 @@ export interface IToadConfig {
   env?: Record<string, string>;
 }
 
+export interface Process {
+  name: string;
+  command: string;
+  status: "running" | "stopped";
+  pid: string;
+}
+
 export interface ToadProject {
   name: string;
+  config: IToadConfig;
+  process: Process | null;
 }
