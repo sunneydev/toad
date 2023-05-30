@@ -2,12 +2,25 @@ import { Redis } from "ioredis";
 import findProcess from "find-process";
 import { spawn, type SpawnOptions } from "child_process";
 import { Process } from "shared/types.js";
+import { conf } from "./conf.js";
 
 export class ProcessManager {
   private redis: Redis;
 
   constructor() {
-    this.redis = new Redis({ host: "vps.sunney.dev", password: "Sani1234@rs" });
+    const redisHost = conf.get("redis_host");
+    const redisPort = conf.get("redis_port");
+    const redisPassword = conf.get("redis_password");
+
+    if (!redisHost) {
+      throw new Error("Redis host not set");
+    }
+
+    this.redis = new Redis({
+      host: redisHost,
+      password: redisPassword,
+      port: redisPort,
+    });
 
     this._retrieveProcesses();
     this._watchProcesses();

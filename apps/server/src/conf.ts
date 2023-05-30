@@ -6,5 +6,8 @@ export const conf = new Conf({
   projectSuffix: "",
   defaults: {
     token: generateToken(),
+    redis_host: "",
+    redis_port: 6379,
+    redis_password: "",
   },
 });
