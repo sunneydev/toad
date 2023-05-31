@@ -16,7 +16,9 @@ npm i -g @sunney/toad-server
 
 2. Run `Toad Server`.
 
-Make sure to configure `Toad Server` with necessary configurations. This involves setting up a configuration file where the `Conf` package stores its data, including a token for authentication and Redis host/port and password for data storage and management. This configuration file is usually located at `/home/USER/.config/toad-server/config.json`.
+Make sure to configure `Toad Server` with necessary configurations. This involves setting up a configuration file where the `Conf` package stores its data, including a token for authentication and Redis host/port and password for data storage and management.
+
+This configuration file is usually located at `/home/USER/.config/toad-server/config.json`.
 
 ### CLI Setup
 
