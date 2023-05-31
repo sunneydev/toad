@@ -40,9 +40,9 @@ export const api = (authProps?: SetupRequest) => {
 
         if ("ok" in data) {
           if (data.ok) {
-            handleApiErrorMessage(data.message, data.error, response.status);
-          } else {
             console.log(data.message);
+          } else {
+            handleApiErrorMessage(data.message, data.error, response.status);
           }
         }
       },
