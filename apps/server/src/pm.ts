@@ -66,7 +66,7 @@ export class ProcessManager {
     child.unref();
 
     if (!child.pid) {
-      throw new Error("Failed to start process");
+      throw new Error("Failed to start process: " + child.stderr);
     }
 
     return child.pid.toString();
