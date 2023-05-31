@@ -2,6 +2,7 @@ export interface SetupRequest {
   token: string;
   domain: string;
 }
+
 export interface Commands {
   start?: string;
   build?: string;
