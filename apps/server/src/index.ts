@@ -1,4 +1,5 @@
 import { conf } from "./conf.js";
+import { $ } from "execa";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { bearerAuth } from "hono/bearer-auth";
@@ -10,7 +11,6 @@ import tar from "tar";
 import path from "node:path";
 import { ProcessManager } from "./pm.js";
 import { IToadConfig } from "./types.js";
-import * as cp from "node:child_process";
 
 const pm = new ProcessManager();
 const app = new Hono().basePath("/api");
@@ -81,7 +81,10 @@ app.get("/status/:name", async (c) => {
     return c.json({ ok: false, message: "Project process does not exist" });
   }
 
-  return c.json({ ok: true, message: process.status });
+  return c.json({
+    ok: true,
+    message: `Project ${projectName} is ${process.status}`,
+  });
 });
 
 app.post("/up/:name", async (c) => {
@@ -114,28 +117,54 @@ app.post("/up/:name", async (c) => {
     return c.json({ ok: false, message: "Invalid project" });
   }
 
-  const installCmd = config.commands?.install ?? "pnpm install";
-  cp.execSync(installCmd, { cwd: projectDir, env: config.env });
-  console.log("Installed");
+  const $$ = $({ cwd: projectDir, env: config.env });
 
-  const buildCmd = config.commands?.build ?? "pnpm build";
-  cp.execSync(buildCmd, { cwd: projectDir, env: config.env });
-  console.log("Built");
+  const {
+    install: installCmd = "pnpm install",
+    build: buildCmd = "pnpm build",
+    start: startCmd = "pnpm start",
+  } = config.commands ?? {};
 
-  const [startCmd, ...startArgs] = (
-    config.commands?.start ?? "pnpm start"
-  ).split(" ");
+  const install = await $$`${installCmd}`;
+  if (install.failed) {
+    return c.json({
+      ok: false,
+      message: "Failed to install dependencies",
+      error: install.all,
+    });
+  }
 
-  console.log("Starting", startCmd, startArgs);
+  const build = await $$`${buildCmd}`;
+  if (build.failed) {
+    return c.json({
+      ok: false,
+      message: "Failed to build project",
+      error: build.all,
+    });
+  }
 
-  const process = await pm.start(projectName, startCmd, startArgs, {
-    cwd: projectDir,
-    env: config.env,
-  });
+  const process = await pm.get(projectName);
 
-  console.log("Started!");
+  if (process?.status === "running") {
+    await pm.stop(projectName);
+  }
 
-  return c.json({ ok: true, message: "Uploaded", process });
+  const [startCmdInitial, ...startArgs] = startCmd.split(" ");
+
+  try {
+    await pm.start(projectName, startCmdInitial, startArgs, {
+      env: config.env,
+      cwd: projectDir,
+    });
+  } catch (err) {
+    return c.json({
+      ok: false,
+      message: "Failed to start project",
+      error: err instanceof Error ? err.message : JSON.stringify(err),
+    });
+  }
+
+  return c.json({ ok: true, message: "Started" });
 });
 
 serve({ ...app, port: conf.get("port") }, (info) =>
