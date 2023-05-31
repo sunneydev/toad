@@ -18,7 +18,5 @@ export async function start(projectName?: string) {
 
   console.log("Starting project", projectName);
 
-  const response = await api().post(`/start/${projectName}`);
-
-  console.log(response.data);
+  await api().post(`/start/${projectName}`);
 }

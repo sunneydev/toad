@@ -41,10 +41,10 @@ export async function up() {
 
   const file = await fs.readFile(tempPath);
 
-  await api().post(`/up/${config.name}`, {
-    headers: { "Content-Type": "application/octet-stream" },
-    body: file,
-  });
-
-  await fs.rm(tempDir, { recursive: true, force: true });
+  await api()
+    .post(`/up/${config.name}`, {
+      headers: { "Content-Type": "application/octet-stream" },
+      body: file,
+    })
+    .finally(() => fs.rm(tempPath, { recursive: true, force: true }));
 }

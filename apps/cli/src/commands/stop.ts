@@ -18,9 +18,5 @@ export async function stop(projectName?: string) {
     projectName = config.name;
   }
 
-  console.log("Stopping project", projectName);
-
-  const response = await api().post(`/stop/${projectName}`);
-
-  console.log(response.data);
+  await api().post(`/stop/${projectName}`);
 }

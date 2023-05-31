@@ -16,7 +16,5 @@ export async function status(projectName?: string) {
     projectName = config.name;
   }
 
-  const response = await api().get(`/status/${projectName}`);
-
-  console.log(response.data);
+  await api().get(`/status/${projectName}`);
 }
