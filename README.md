@@ -71,3 +71,7 @@ toad status
 ```
 
 That's it! With `Toad CLI` and `Toad Server`, managing and deploying your projects has never been easier.
+
+## License
+
+`Toad CLI` and `Toad Server` are [MIT licensed](LICENSE).
