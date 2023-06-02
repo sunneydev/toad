@@ -59,6 +59,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.0.2
         version: 1.0.2
+      '@sunney/requests':
+        specifier: ^0.2.7
+        version: 0.2.7
       conf:
         specifier: ^11.0.1
         version: 11.0.1
