@@ -3,7 +3,12 @@ import { $ } from "execa";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { bearerAuth } from "hono/bearer-auth";
-import { listProjects, toadProjectsDir } from "./utils.js";
+import {
+  addCaddyConfig,
+  getCaddyConfig,
+  listProjects,
+  toadProjectsDir,
+} from "./utils.js";
 import fs from "node:fs/promises";
 import fse from "fs-extra";
 import os from "node:os";
@@ -141,6 +146,29 @@ app.post("/up/:name", async (c) => {
       message: "Failed to build project",
       error: build.all,
     });
+  }
+
+  if (config.appDomain) {
+    const { appDomain } = config;
+    const port = Number(config.env?.PORT);
+
+    if (typeof port !== "number") {
+      return c.json({
+        ok: false,
+        message: "PORT environment variable is required when using appDomain",
+      });
+    }
+
+    const caddyConfig = await getCaddyConfig().then((r) => r.data?.toString());
+
+    if (
+      !caddyConfig?.includes(`"${appDomain}"`) &&
+      !caddyConfig?.includes(`"127.0.0.1:${port}"`)
+    ) {
+      await addCaddyConfig(appDomain, port);
+    } else {
+      console.log("Caddy config already exists");
+    }
   }
 
   const process = await pm.get(projectName);
