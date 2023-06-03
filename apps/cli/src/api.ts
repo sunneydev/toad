@@ -37,7 +37,14 @@ export const api = (authProps?: SetupRequest) => {
       if (data.ok) {
         console.log(data.message);
       } else {
-        console.error(`${data.message}: ${data.error}`);
+        const errorMessage =
+          data.message && data.error
+            ? `${data.message}: ${data.error}`
+            : data.message && !data.error
+            ? data.message
+            : data.error ?? "Unknown error";
+
+        console.error(errorMessage);
       }
     },
   });
