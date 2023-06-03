@@ -1,14 +1,8 @@
 import { conf } from "./conf.js";
-import { $ } from "execa";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { bearerAuth } from "hono/bearer-auth";
-import {
-  addCaddyConfig,
-  getCaddyConfig,
-  listProjects,
-  toadProjectsDir,
-} from "./utils.js";
+import * as utils from "./utils.js";
 import fs from "node:fs/promises";
 import fse from "fs-extra";
 import os from "node:os";
@@ -27,7 +21,7 @@ app.get("/auth", async (c) => {
 });
 
 app.get("/projects", async (c) => {
-  const projects = await listProjects(pm);
+  const projects = await utils.listProjects(pm);
 
   return c.json(projects);
 });
@@ -35,7 +29,7 @@ app.get("/projects", async (c) => {
 app.post("/start/:name", async (c) => {
   const projectName = c.req.param("name");
 
-  const projectDir = path.join(toadProjectsDir, projectName);
+  const projectDir = path.join(utils.toadProjectsDir, projectName);
 
   const projectConfig = (await fs
     .readFile(path.join(projectDir, "toad.config.json"), "utf-8")
@@ -101,7 +95,7 @@ app.post("/up/:name", async (c) => {
 
   await fs.writeFile(tempPath, Buffer.from(projectBundle));
 
-  const projectDir = path.join(toadProjectsDir, projectName);
+  const projectDir = path.join(utils.toadProjectsDir, projectName);
 
   if (fse.existsSync(projectDir)) {
     await fse.emptyDir(projectDir);
@@ -122,65 +116,20 @@ app.post("/up/:name", async (c) => {
     return c.json({ ok: false, message: "Invalid project" });
   }
 
-  const $$ = $({ cwd: projectDir, env: config.env });
-
-  const {
-    install: installCmd = "pnpm install",
-    build: buildCmd = "pnpm build",
-    start: startCmd = "pnpm start",
-  } = config.commands ?? {};
-
-  const install = await $$`${installCmd}`;
-  if (install.failed) {
-    return c.json({
-      ok: false,
-      message: "Failed to install dependencies",
-      error: install.all,
-    });
-  }
-
-  const build = await $$`${buildCmd}`;
-  if (build.failed) {
-    return c.json({
-      ok: false,
-      message: "Failed to build project",
-      error: build.all,
-    });
-  }
-
-  if (config.appDomain) {
-    const { appDomain } = config;
-    const port = Number(config.env?.PORT);
-
-    if (typeof port !== "number") {
-      return c.json({
-        ok: false,
-        message: "PORT environment variable is required when using appDomain",
-      });
-    }
-
-    const caddyConfig = await getCaddyConfig().then((r) => r.data?.toString());
-
-    if (
-      !caddyConfig?.includes(`"${appDomain}"`) &&
-      !caddyConfig?.includes(`"127.0.0.1:${port}"`)
-    ) {
-      await addCaddyConfig(appDomain, port);
-    } else {
-      console.log("Caddy config already exists");
-    }
-  }
-
-  const process = await pm.get(projectName);
-
-  if (process?.status === "running") {
-    await pm.stop(projectName);
-  }
-
-  const [startCmdInitial, ...startArgs] = startCmd.split(" ");
-
   try {
-    await pm.start(projectName, startCmdInitial, startArgs, {
+    await utils.setupProject(projectDir, config);
+
+    const process = await pm.get(projectName);
+
+    if (process?.status === "running") {
+      await pm.stop(projectName);
+    }
+
+    const [startCmd, ...startArgs] = (
+      config.commands?.start ?? "pnpm install"
+    ).split(" ");
+
+    await pm.start(projectName, startCmd, startArgs, {
       env: config.env,
       cwd: projectDir,
     });

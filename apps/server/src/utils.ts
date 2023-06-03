@@ -5,12 +5,54 @@ import os from "node:os";
 import * as fs from "node:fs/promises";
 import fse from "fs-extra/esm";
 import { ProcessManager } from "./pm.js";
+import { $ } from "execa";
 
 export function generateToken() {
   return crypto.randomBytes(32).toString("hex");
 }
 
 export const toadProjectsDir = `${os.homedir()}/toad-projects`;
+
+export async function setupProject(projectDir: string, config: IToadConfig) {
+  const $$ = $({ cwd: projectDir, env: config.env });
+
+  const {
+    install: installCmd = "pnpm install",
+    build: buildCmd = "pnpm build",
+  } = config.commands ?? {};
+
+  const install = await $$`${installCmd}`.catch((e) => e);
+  if (install.failed) {
+    throw new Error("Failed to install project: " + install.stderr);
+  }
+
+  const build = await $$`${buildCmd}`.catch((e) => e);
+  if (build.failed) {
+    throw new Error("Failed to build project: " + build.stderr);
+  }
+
+  if (config.appDomain) {
+    const { appDomain } = config;
+    const port = Number(config.env?.PORT);
+
+    if (typeof port !== "number") {
+      throw new Error(
+        "PORT environment variable is required when using appDomain"
+      );
+    }
+
+    const caddyConfig = await getCaddyConfig().then((r) => r.data?.toString());
+
+    if (
+      !caddyConfig?.includes(`"${appDomain}"`) &&
+      !caddyConfig?.includes(`"127.0.0.1:${port}"`)
+    ) {
+      await addCaddyConfig(appDomain, port);
+    } else {
+      console.log("Caddy config already exists");
+    }
+  }
+}
 
 export async function listProjects(pm: ProcessManager) {
   if (fse.pathExistsSync(toadProjectsDir) === false) {
