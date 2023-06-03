@@ -3,9 +3,11 @@ import { requests } from "@sunney/requests";
 import crypto from "node:crypto";
 import os from "node:os";
 import * as fs from "node:fs/promises";
-import fse from "fs-extra/esm";
+import path from "node:path";
+import fse from "fs-extra";
 import { ProcessManager } from "./pm.js";
 import { $ } from "execa";
+import tar from "tar";
 
 export function generateToken() {
   return crypto.randomBytes(32).toString("hex");
@@ -13,7 +15,43 @@ export function generateToken() {
 
 export const toadProjectsDir = `${os.homedir()}/toad-projects`;
 
-export async function setupProject(projectDir: string, config: IToadConfig) {
+export async function extractProject(
+  projectDir: string,
+  projectBundle: ArrayBuffer
+) {
+  const tempDir = await fs.mkdtemp(`${os.tmpdir()}/.toad`);
+  const tempPath = `${tempDir}/toad-project-${Date.now()}.tar.gz`;
+
+  await fs.writeFile(tempPath, Buffer.from(projectBundle));
+
+  if (fse.existsSync(projectDir)) {
+    await fse.emptyDir(projectDir);
+  } else {
+    await fse.mkdir(projectDir, { recursive: true });
+  }
+
+  await tar.x({ file: tempPath, cwd: projectDir });
+
+  await fs.rm(tempDir, { recursive: true, force: true });
+
+  const config = (await fs
+    .readFile(path.join(projectDir, "toad.config.json"), "utf-8")
+    .then(JSON.parse)
+    .catch(() => null)) as IToadConfig | null;
+
+  if (!config) {
+    throw new Error("Failed to read project config");
+  }
+
+  return config;
+}
+
+export async function setupProject(
+  projectDir: string,
+  projectBundle: ArrayBuffer
+) {
+  const config = await extractProject(projectDir, projectBundle);
+
   const $$ = $({ cwd: projectDir, env: config.env });
 
   const {
@@ -52,6 +90,8 @@ export async function setupProject(projectDir: string, config: IToadConfig) {
       console.log("Caddy config already exists");
     }
   }
+
+  return config;
 }
 
 export async function listProjects(pm: ProcessManager) {

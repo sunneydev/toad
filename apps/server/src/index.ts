@@ -4,9 +4,6 @@ import { serve } from "@hono/node-server";
 import { bearerAuth } from "hono/bearer-auth";
 import * as utils from "./utils.js";
 import fs from "node:fs/promises";
-import fse from "fs-extra";
-import os from "node:os";
-import tar from "tar";
 import path from "node:path";
 import { ProcessManager } from "./pm.js";
 import { IToadConfig } from "./types.js";
@@ -87,37 +84,12 @@ app.get("/status/:name", async (c) => {
 });
 
 app.post("/up/:name", async (c) => {
-  const projectName = c.req.param("name");
-  const projectBundle = await c.req.arrayBuffer();
-
-  const tempDir = await fs.mkdtemp(`${os.tmpdir()}/.toad`);
-  const tempPath = `${tempDir}/toad-project-${Date.now()}.tar.gz`;
-
-  await fs.writeFile(tempPath, Buffer.from(projectBundle));
-
-  const projectDir = path.join(utils.toadProjectsDir, projectName);
-
-  if (fse.existsSync(projectDir)) {
-    await fse.emptyDir(projectDir);
-  } else {
-    await fse.mkdir(projectDir, { recursive: true });
-  }
-
-  await tar.x({ file: tempPath, cwd: projectDir });
-
-  await fs.rm(tempDir, { recursive: true, force: true });
-
-  const config = (await fs
-    .readFile(path.join(projectDir, "toad.config.json"), "utf-8")
-    .then(JSON.parse)
-    .catch(() => null)) as IToadConfig | null;
-
-  if (!config) {
-    return c.json({ ok: false, message: "Invalid project" });
-  }
-
   try {
-    await utils.setupProject(projectDir, config);
+    const projectName = c.req.param("name");
+    const projectDir = path.join(utils.toadProjectsDir, projectName);
+    const projectBundle = await c.req.arrayBuffer();
+
+    const config = await utils.setupProject(projectDir, projectBundle);
 
     const process = await pm.get(projectName);
 
@@ -133,6 +105,8 @@ app.post("/up/:name", async (c) => {
       env: config.env,
       cwd: projectDir,
     });
+
+    return c.json({ ok: true, message: "Started" });
   } catch (err) {
     return c.json({
       ok: false,
@@ -140,8 +114,6 @@ app.post("/up/:name", async (c) => {
       error: err instanceof Error ? err.message : JSON.stringify(err),
     });
   }
-
-  return c.json({ ok: true, message: "Started" });
 });
 
 serve({ ...app, port: conf.get("port") }, (info) =>
