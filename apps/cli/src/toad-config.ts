@@ -33,7 +33,7 @@ export class ToadConfig implements IToadConfig {
 
     return fs.promises.writeFile(
       `${this.baseDirectory}/toad.config.json`,
-      JSON.stringify(config)
+      JSON.stringify(config, null, 2)
     );
   }
 
