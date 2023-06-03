@@ -6,7 +6,7 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 import fse from "fs-extra";
 import { ProcessManager } from "./pm.js";
-import { $ } from "execa";
+import { execa } from "execa";
 import tar from "tar";
 
 export function generateToken() {
@@ -52,21 +52,25 @@ export async function setupProject(
 ) {
   const config = await extractProject(projectDir, projectBundle);
 
-  const $$ = $({ cwd: projectDir, env: config.env });
-
   const {
     install: installCmd = "pnpm install",
     build: buildCmd = "pnpm build",
   } = config.commands ?? {};
 
-  const install = await $$`${installCmd}`.catch((e) => e);
-  if (install.failed) {
-    throw new Error("Failed to install project: " + install.stderr);
+  const install = await execa(installCmd, {
+    cwd: projectDir,
+    env: config.env,
+  }).catch((e) => e);
+  if ("message" in install) {
+    throw new Error("Failed to install project: " + install.message);
   }
 
-  const build = await $$`${buildCmd}`.catch((e) => e);
-  if (build.failed) {
-    throw new Error("Failed to build project: " + build.stderr);
+  const build = await execa(buildCmd, {
+    cwd: projectDir,
+    env: config.env,
+  }).catch((e) => e);
+  if ("message" in build) {
+    throw new Error("Failed to build project: " + build.message);
   }
 
   if (config.appDomain) {
