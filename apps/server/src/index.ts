@@ -98,7 +98,7 @@ app.post("/up/:name", async (c) => {
     }
 
     const [startCmd, ...startArgs] = (
-      config.commands?.start ?? "pnpm install"
+      config.commands?.start ?? "pnpm start"
     ).split(" ");
 
     await pm.start(projectName, startCmd, startArgs, {

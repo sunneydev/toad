@@ -49,6 +49,7 @@ export class ProcessManager {
   }
 
   private _startProcess(
+    name: string,
     command: string,
     args?: string[],
     options?: SpawnOptions
@@ -57,16 +58,28 @@ export class ProcessManager {
       detached: true,
       stdio: "ignore",
       ...options,
+      env: {
+        ...process.env,
+        ...options?.env,
+      },
     });
 
-    child.on("exit", (code) => {
-      console.log(`Child process exited with code ${code}`);
+    child.on("exit", (code, message) => {
+      console.log(`${name} exited with code ${code} ${message}`);
     });
+
+    child.on("message", (message) => {
+      console.log(`${name} sent message ${message}`);
+    });
+
+    child.on("error", console.error);
 
     child.unref();
 
     if (!child.pid) {
-      throw new Error("Failed to start process: " + child.stderr);
+      throw new Error(
+        `Failed to start ${name}: ` + child.stderr ?? "Unknown error"
+      );
     }
 
     return child.pid.toString();
@@ -83,7 +96,7 @@ export class ProcessManager {
     args?: string[],
     options?: SpawnOptions
   ): Promise<Process> {
-    const pid = this._startProcess(command, args, options);
+    const pid = this._startProcess(name, command, args, options);
 
     const process: Process = {
       name,

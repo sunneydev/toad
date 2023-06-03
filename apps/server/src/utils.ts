@@ -78,7 +78,7 @@ export async function setupProject(
 
   if (config.appDomain) {
     const { appDomain } = config;
-    const port = Number(config.env?.PORT);
+    const port = Number(config.env?.port);
 
     if (typeof port !== "number") {
       throw new Error(
@@ -86,7 +86,9 @@ export async function setupProject(
       );
     }
 
-    const caddyConfig = await getCaddyConfig().then((r) => r.data?.toString());
+    const caddyConfig = await getCaddyConfig().then((r) =>
+      JSON.stringify(r.data)
+    );
 
     if (
       !caddyConfig?.includes(`"${appDomain}"`) &&
@@ -152,13 +154,13 @@ export async function addCaddyConfig(domain: string, port: number) {
   };
 
   await requests.post(
-    "http://localhost:2019/config/apps/http/servers/srv0/routes",
+    "http://127.0.0.1:2019/config/apps/http/servers/srv0/routes",
     { body: config }
   );
 }
 
 export async function getCaddyConfig() {
   return requests.get(
-    "http://localhost:2019/config/apps/http/servers/srv0/routes"
+    "http://127.0.0.1:2019/config/apps/http/servers/srv0/routes"
   );
 }
