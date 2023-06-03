@@ -26,7 +26,9 @@ export async function init(name?: string, options?: { appDomain?: string }) {
     message: "What do you want to name your project?",
     initial: name || directoryName,
     validate: (value) =>
-      /^[a-zA-Z0-9]+$/.test(value) ? true : "Please enter a project name",
+      /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(value)
+        ? true
+        : "Please enter a project name",
   });
 
   if (typeof projectName !== "string") {
