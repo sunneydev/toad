@@ -3,6 +3,14 @@ export interface SetupRequest {
   domain: string;
 }
 
+export type ApiResponse =
+  | string
+  | {
+      ok: boolean;
+      message: string;
+      error?: string;
+    };
+
 export interface Commands {
   start?: string;
   build?: string;

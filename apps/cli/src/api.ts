@@ -1,24 +1,6 @@
-import { SetupRequest } from "./types.js";
+import { ApiResponse, SetupRequest } from "./types.js";
 import { conf } from "./conf.js";
 import { requests } from "@sunney/requests";
-import { program } from "commander";
-
-function handleApiErrorMessage(
-  message?: string,
-  error?: string,
-  statusCode?: number
-) {
-  const msg =
-    message && error
-      ? `${message}: ${error}`
-      : message && !error
-      ? message
-      : error && !message
-      ? error
-      : `Unknown error occured. Status code: ${statusCode}`;
-
-  program.error(msg);
-}
 
 export const api = (authProps?: SetupRequest) => {
   const { domain, token } = authProps ?? conf.store;
@@ -31,21 +13,32 @@ export const api = (authProps?: SetupRequest) => {
 
   const prefix = domain.includes("0.0.0.0") ? "http" : "https";
 
-  return requests.client({
+  const client = requests.client({
     baseUrl: `${prefix}://${domain}/api`,
     headers: { Authorization: `Bearer ${token}` },
-    interceptors: {
-      onResponse(url, init, response) {
-        const data = response.data as any;
+  });
 
-        if ("ok" in data) {
-          if (data.ok) {
-            console.log(data.message);
-          } else {
-            handleApiErrorMessage(data.message, data.error, response.status);
-          }
+  client.intercept<ApiResponse>({
+    onResponse(url, init, response) {
+      const data = response.data;
+
+      if (typeof data === "string") {
+        if (!response.ok && !data) {
+          console.log(
+            `Request to ${url} failed with status ${response.status}`
+          );
+        } else {
+          console.log(data);
         }
-      },
+
+        return;
+      }
+
+      if (data.ok) {
+        console.log(data.message);
+      } else {
+        console.error(`${data.message}: ${data.error}`);
+      }
     },
   });
 };
