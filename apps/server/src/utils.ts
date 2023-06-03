@@ -52,12 +52,11 @@ export async function setupProject(
 ) {
   const config = await extractProject(projectDir, projectBundle);
 
-  const {
-    install: installCmd = "pnpm install",
-    build: buildCmd = "pnpm build",
-  } = config.commands ?? {};
+  const [installCmd, ...installArgs] = (
+    config.commands?.install || "pnpm install"
+  ).split(" ");
 
-  const install = await execa(installCmd, {
+  const install = await execa(installCmd, installArgs, {
     cwd: projectDir,
     env: config.env,
   }).catch((e) => e);
@@ -65,7 +64,11 @@ export async function setupProject(
     throw new Error("Failed to install project: " + install.message);
   }
 
-  const build = await execa(buildCmd, {
+  const [buildCmd, ...buildArgs] = (
+    config.commands?.build || "pnpm build"
+  ).split(" ");
+
+  const build = await execa(buildCmd, buildArgs, {
     cwd: projectDir,
     env: config.env,
   }).catch((e) => e);
