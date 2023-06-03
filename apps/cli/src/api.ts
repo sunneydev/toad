@@ -48,4 +48,6 @@ export const api = (authProps?: SetupRequest) => {
       }
     },
   });
+
+  return client;
 };

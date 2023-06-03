@@ -1,7 +1,7 @@
 {
   "name": "@sunney/toad-cli",
   "description": "Toad CLI",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "bin": {
     "toad": "./dist/index.js"
   },
