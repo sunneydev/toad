@@ -30,7 +30,7 @@ export class ProcessManager {
     const processes = await this.redis.hgetall("processes");
 
     for (const id in processes) {
-      this.redis.set(id, JSON.stringify(processes[id]));
+      this.redis.hset("processes", id, JSON.stringify(processes[id]));
     }
   }
 
