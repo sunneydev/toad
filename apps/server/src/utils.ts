@@ -96,7 +96,9 @@ export async function setupProject(
     ) {
       await addCaddyConfig(appDomain, port);
     } else {
-      console.log("Caddy config already exists");
+      console.log(
+        `Caddy config with domain ${appDomain} or IP '127.0.0.1:${port}' already exists`
+      );
     }
   }
 
