@@ -29,6 +29,8 @@ export async function up() {
   const tempDir = await fs.mkdtemp(`${os.tmpdir()}/.toad`);
   const tempPath = `${tempDir}/${config.name}-${Date.now()}.tar.gz`;
 
+  console.log("Creating bundle...");
+
   await tar.c(
     {
       gzip: true,
@@ -38,6 +40,8 @@ export async function up() {
     },
     ["."]
   );
+
+  console.log("Uploading bundle...");
 
   const file = await fs.readFile(tempPath);
 
