@@ -2,7 +2,7 @@ import path from "path";
 import { ToadConfig } from "../toad-config.js";
 import prompts from "prompts";
 import { api } from "../api.js";
-import { ToadProject } from "../types.js";
+import { ApiResponse, ToadProject } from "../types.js";
 
 export async function init(name?: string, options?: { appDomain?: string }) {
   const projectDirectoryPath = process.cwd();
@@ -36,8 +36,8 @@ export async function init(name?: string, options?: { appDomain?: string }) {
   }
 
   const projects = await api()
-    .get<ToadProject[]>("/projects")
-    .then((r) => r.data);
+    .get<ApiResponse<{ projects: ToadProject[] }>>("/projects")
+    .then((r) => r.data.projects);
 
   if (projects) {
     const projectExists = projects.find(

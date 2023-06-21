@@ -18,9 +18,9 @@ export const api = (authProps?: SetupRequest) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  client.intercept<ApiResponse>({
-    onResponse(url, init, response) {
-      const data = response.data;
+  client.intercept({
+    onResponse: (url, init, response) => {
+      const data = response.data as ApiResponse | string;
 
       if (typeof data === "string") {
         if (!response.ok && !data) {
