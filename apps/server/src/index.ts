@@ -20,7 +20,11 @@ app.get("/auth", async (c) => {
 app.get("/projects", async (c) => {
   const projects = await utils.listProjects(pm);
 
-  return c.json(projects);
+  return c.json({
+    ok: true,
+    message: "Projects retrieved successfully",
+    projects,
+  });
 });
 
 app.post("/start/:name", async (c) => {
