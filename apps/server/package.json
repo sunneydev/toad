@@ -1,5 +1,6 @@
 {
-  "name": "@sunney/toad-server",
+  "name": "toad-server",
+  "homepage": "https://github.com/sunneydev/toad",
   "description": "Toad Server",
   "version": "1.0.14",
   "type": "module",
