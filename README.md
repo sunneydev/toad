@@ -11,7 +11,7 @@ Before you start, you'll need to setup `Toad Server` on your Virtual Private Ser
 1. Install `Toad Server` globally using npm:
 
 ```sh
-npm i -g @sunney/toad-server
+npm i -g toad-server
 ```
 
 2. Run `Toad Server`.
@@ -27,7 +27,7 @@ Once `Toad Server` is up and running, you can setup `Toad CLI` on the machine wh
 1. Install `Toad CLI` globally using npm:
 
 ```sh
-npm i -g @sunney/toad-cli
+npm i -g toad-cli
 ```
 
 2. Run the `setup` command with the `-t` option to provide the server's token and the `-d` option to specify the domain of the server where `Toad Server` is installed.

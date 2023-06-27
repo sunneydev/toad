@@ -30,7 +30,6 @@
   ],
   "dependencies": {
     "@sunney/requests": "^0.2.7",
-    "@sunney/toad-server": "workspace:*",
     "commander": "^10.0.1",
     "conf": "^11.0.1",
     "prompts": "^2.4.2",
