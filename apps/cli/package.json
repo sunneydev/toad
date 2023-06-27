@@ -1,5 +1,6 @@
 {
-  "name": "@sunney/toad-cli",
+  "name": "toad-cli",
+  "homepage": "https://github.com/sunneydev/toad",
   "description": "Toad CLI",
   "version": "1.0.8",
   "bin": {
@@ -15,6 +16,12 @@
     "prepublishOnly": "pnpm run build"
   },
   "license": "MIT",
+  "keywords": [
+    "pm2",
+    "toad",
+    "toad-cli",
+    "toad-server"
+  ],
   "dependencies": {
     "@sunney/requests": "^0.2.7",
     "@sunney/toad-server": "workspace:*",
