@@ -1,6 +1,6 @@
 # Toad CLI and Toad Server
 
-Welcome to the `Toad` project, a command-line tool designed to simplify the process of deploying your projects to a server. Using `Toad CLI` and `Toad Server`, you can upload, start, stop, and monitor your projects with ease.
+#### Command-line tool designed to simplify the process of deploying your projects to a server. Using `Toad CLI` and `Toad Server`, you can upload, start, stop, and monitor your projects with ease.
 
 ## Getting Started
 
