@@ -1,6 +1,10 @@
 {
   "name": "toad-server",
   "homepage": "https://github.com/sunneydev/toad",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "description": "Toad Server",
   "version": "1.0.16",
   "type": "module",
