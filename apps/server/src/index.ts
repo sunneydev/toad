@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { conf } from "./conf.js";
 import { start } from "./server.js";
 

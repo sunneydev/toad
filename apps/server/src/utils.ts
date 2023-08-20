@@ -1,9 +1,9 @@
-import { IToadConfig } from "./types.js";
 import { requests } from "@sunney/requests";
 import crypto from "node:crypto";
 import os from "node:os";
 import * as fs from "node:fs/promises";
 import path from "node:path";
+import { IToadConfig } from "./types.js";
 import fse from "fs-extra";
 import { ProcessManager } from "./pm.js";
 import { execa } from "execa";
