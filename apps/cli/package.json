@@ -1,6 +1,6 @@
 {
   "name": "toad-cli",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "The command line interface for communicating with toad-server",
   "license": "MIT",
   "homepage": "https://github.com/sunneydev/toad",
